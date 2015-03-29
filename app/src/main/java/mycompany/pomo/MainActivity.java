@@ -1,19 +1,29 @@
 package mycompany.pomo;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
 public class MainActivity extends Activity {
 
-
     TextView timerView;
+    TextView counterView;
+    TextView statusView;
+    int counter;
+    MyTimer cycle;
+    String status;
+    int workTime = 10000;
+    int restTime = 5000;
+    RelativeLayout rl;
 
 
     //new Cycle(1, 1, 10, 10, 10);
@@ -26,14 +36,24 @@ public class MainActivity extends Activity {
         Button startButton = (Button) findViewById(R.id.startButton);
         Button stopButton = (Button) findViewById(R.id.stopButton);
         timerView = (TextView) findViewById(R.id.timerView);
+        timerView.setText("waiting");
+        counterView = (TextView) findViewById(R.id.counterView);
+        counterView.setText("Cycle: 0");
+        statusView = (TextView) findViewById(R.id.statusView);
+        counter = 0;
+        status = "Work Time!";
+        statusView.setText(status);
+        rl = (RelativeLayout) findViewById(R.id.backgroundID);
 
-        final MyTimer cycle = new MyTimer(20000, 1000);
+        cycle = new MyTimer(workTime, 1000);
+        rl.setBackgroundColor(Color.WHITE);
 
 
-        startButton.setOnClickListener( new View.OnClickListener() {
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 cycle.start();
+                rl.setBackgroundColor(Color.RED);
             }
 
         });
@@ -106,7 +126,27 @@ public class MainActivity extends Activity {
 
         @Override
         public void onFinish() {
-            timerView.setText("butt");
+
+            int initTime = 0;
+
+            if(status == "Work Time!"){
+                status = "Rest Time!";
+                initTime = restTime;
+                rl.setBackgroundColor(Color.GREEN);
+            }
+            else {
+                counter ++;
+                status = "Work Time!";
+                initTime = workTime;
+                rl.setBackgroundColor(Color.RED);
+            }
+
+            counterView.setText("Cycle: " + counter);
+
+            cycle = new MyTimer(initTime, 1000);
+            cycle.start();
+
+            statusView.setText(status);
 
         }
     }
